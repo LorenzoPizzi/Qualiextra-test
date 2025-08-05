@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",                      // Génère du JS moderne
+    "lib": ["ES2021"],
+    "module": "commonjs",                    // Compatible avec Node.js
+    "rootDir": "./src",                      // Dossier source
+    "outDir": "./dist",                      // Dossier de sortie JS compilé
+    "esModuleInterop": true,                 // Pour importer les modules JS normalement
+    "strict": true,                          // Meilleure rigueur de typage
+    "skipLibCheck": true,                    // Ignore les types des libs externes
+    "resolveJsonModule": true,               // Permet d'importer des fichiers JSON
+    "esModuleInterop": true,                 // Interopérabilité avec les modules ES
+    "experimentalDecorators": true,          // Support des décorateurs
+    "emitDecoratorMetadata": true            // Émet les métadonnées des décorateurs
+  },
+  "include": ["src"]
+}
