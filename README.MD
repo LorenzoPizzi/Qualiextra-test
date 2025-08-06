@@ -1,5 +1,6 @@
 # Qualiextra Back-End - API REST sécurisée avec Typescript, TSOA & Prisma
 
+
 ## 📜 Présentation
 
 Ce projet est une API REST développée dans le cadre d’un test technique pour le poste de développeur Back-End chez Qualiextra.  
@@ -162,4 +163,4 @@ L’architecture modulaire facilite l’ajout de nouvelles fonctionnalités (ex:
 ---
 
 👨‍💻 Auteur
-Lorenzo Pizzi - Développeur Back-End en apprentissage.
+Lorenzo Pizzi  - Développeur Back-End en apprentissage.
