@@ -18,14 +18,13 @@ const prisma = new PrismaClient() // Crée une instance de Prisma pour accéder 
 @Route('users') // Toutes les routes de ce contrôleur commencent par /users
 @Tags('Users') // Groupe Swagger : "Users" (pour la documentation)
 export class UserController extends Controller {
-  
   // Récupère tous les utilisateurs (Admin uniquement)
   @Security('jwt') // Cette route nécessite un token JWT
   @Get('/')
   public async getAllUsers(@Request() req: AuthenticatedRequest) {
     // Vérifie si l'utilisateur est admin
     if (req.user?.role !== 'ADMIN') {
-      this.setStatus(403) 
+      this.setStatus(403) // Définit le code HTTP à 403 (Accès interdit)
       return { message: 'Accès interdit : admin uniquement.' }
     }
 
@@ -140,5 +139,37 @@ export class UserController extends Controller {
     })
 
     return updatedUser // Retourne le profil mis à jour
+  }
+
+  // Récupère le profil de l’utilisateur connecté
+  @Security('jwt')
+  @Get('profile')
+  public async getMyProfile(@Request() req: AuthenticatedRequest) {
+    const userId = req.user?.id // Récupère l'id de l'utilisateur connecté
+
+    if (!userId) { // Si l'utilisateur n'est pas authentifié
+      this.setStatus(401)
+      return { message: 'Utilisateur non authentifié' }
+    }
+
+    // Cherche l'utilisateur et sélectionne certains champs
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        nom: true,
+        prenom: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+      },
+    })
+
+    if (!user) { // Si l'utilisateur n'existe pas
+      this.setStatus(404)
+      return { message: 'Utilisateur introuvable' }
+    }
+
+    return user // Retourne le profil de l'utilisateur connecté
   }
 }
