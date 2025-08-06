@@ -65,8 +65,7 @@ export class AuthController extends Controller {
   }
 
   /**
-   * Vérifie un email via un token transmis dans l'URL
-   * Redirige vers /docs ou page d'erreur
+   * Vérifie un email via un lien reçu par email (GET avec token en query param)
    */
   @Get('/verify-email')
   public async verifyEmail(@Query() token: string): Promise<void> {

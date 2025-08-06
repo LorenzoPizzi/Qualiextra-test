@@ -646,52 +646,28 @@
 			}
 		},
 		"/auth/verify-email": {
-			"post": {
+			"get": {
 				"operationId": "VerifyEmail",
 				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
-							}
-						}
+					"204": {
+						"description": "No content"
 					}
 				},
-				"description": "Vérifie un email via un token envoyé par email\r\nAppelée après clic sur lien de vérification",
+				"description": "Vérifie un email via un lien reçu par email (GET avec token en query param)",
 				"tags": [
 					"Auth"
 				],
 				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"token": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"token"
-								],
-								"type": "object"
-							}
+				"parameters": [
+					{
+						"in": "query",
+						"name": "token",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
-				}
+				]
 			}
 		},
 		"/auth/login": {
@@ -717,7 +693,7 @@
 						}
 					}
 				},
-				"description": "Connexion utilisateur (email + mot de passe)\r\nNécessite un email vérifié",
+				"description": "Connexion utilisateur (email + mot de passe)",
 				"tags": [
 					"Auth"
 				],
