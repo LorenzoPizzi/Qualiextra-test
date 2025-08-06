@@ -11,7 +11,8 @@
     "resolveJsonModule": true,               // Permet d'importer des fichiers JSON
     "esModuleInterop": true,                 // Interopérabilité avec les modules ES
     "experimentalDecorators": true,          // Support des décorateurs
-    "emitDecoratorMetadata": true            // Émet les métadonnées des décorateurs
+    "emitDecoratorMetadata": true,           // Émet les métadonnées des décorateurs
+     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["src"]
 }

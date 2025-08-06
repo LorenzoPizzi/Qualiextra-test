@@ -1,25 +1,27 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import { Role } from '@prisma/client' //  Import de l'enum Role
+
 dotenv.config()
 
-// On étend le type Request pour pouvoir y ajouter une propriété `user`
-interface AuthenticatedRequest extends Request {
+//  On étend le type Request d'Express pour inclure une propriété user
+export interface AuthenticatedRequest extends Request {
   user?: {
     id: number
-    email: string
-    role: string
+    role: Role //  On utilise bien l'enum Role ici pour respecter le typage Prisma
   }
 }
 
+//  Middleware d'authentification JWT
 export const authMiddleware = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
-  //  Récupère le token dans le header Authorization: Bearer <token>
   const authHeader = req.headers.authorization
 
+  //  Vérifie la présence du header "Authorization: Bearer <token>"
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Token manquant ou invalide' })
   }
@@ -27,23 +29,20 @@ export const authMiddleware = (
   const token = authHeader.split(' ')[1]
 
   try {
-    //  Vérifie et décode le token
+    //  Vérifie et décode le token JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: number
-      email: string
-      role: string
+      role: Role //  On force le type de role ici pour la compatibilité
     }
 
-    //  On attache les infos du user décodé à la requête
+    //  Attache les infos utiles à la requête (pour les contrôleurs)
     req.user = {
       id: decoded.id,
-      email: decoded.email,
       role: decoded.role
     }
 
-    //  Passe au handler suivant
     next()
   } catch (error) {
-    return res.status(403).json({ message: 'Token invalide' })
+    return res.status(403).json({ message: 'Token invalide ou expiré' })
   }
 }

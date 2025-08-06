@@ -7,6 +7,28 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"_36_Enums.Role": {
+				"type": "string",
+				"enum": [
+					"USER",
+					"ADMIN"
+				]
+			},
+			"Partial__nom-string--prenom-string--password-string__": {
+				"properties": {
+					"nom": {
+						"type": "string"
+					},
+					"prenom": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
 			"RegisterBody": {
 				"properties": {
 					"nom": {
@@ -65,6 +87,393 @@
 		"contact": {}
 	},
 	"paths": {
+		"/users": {
+			"get": {
+				"operationId": "GetAllUsers",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"items": {
+												"properties": {
+													"emailVerified": {
+														"type": "boolean"
+													},
+													"role": {
+														"$ref": "#/components/schemas/_36_Enums.Role"
+													},
+													"email": {
+														"type": "string"
+													},
+													"prenom": {
+														"type": "string"
+													},
+													"nom": {
+														"type": "string"
+													},
+													"id": {
+														"type": "number",
+														"format": "double"
+													}
+												},
+												"required": [
+													"emailVerified",
+													"role",
+													"email",
+													"prenom",
+													"nom",
+													"id"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/users/{userId}": {
+			"get": {
+				"operationId": "GetUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"verifyToken": {
+													"type": "string"
+												},
+												"emailVerified": {
+													"type": "boolean"
+												},
+												"role": {
+													"$ref": "#/components/schemas/_36_Enums.Role"
+												},
+												"password": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"prenom": {
+													"type": "string"
+												},
+												"nom": {
+													"type": "string"
+												},
+												"id": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"verifyToken",
+												"emailVerified",
+												"role",
+												"password",
+												"email",
+												"prenom",
+												"nom",
+												"id"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"verifyToken": {
+													"type": "string"
+												},
+												"emailVerified": {
+													"type": "boolean"
+												},
+												"role": {
+													"$ref": "#/components/schemas/_36_Enums.Role"
+												},
+												"password": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"prenom": {
+													"type": "string"
+												},
+												"nom": {
+													"type": "string"
+												},
+												"id": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"verifyToken",
+												"emailVerified",
+												"role",
+												"password",
+												"email",
+												"prenom",
+												"nom",
+												"id"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial__nom-string--prenom-string--password-string__"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/users/profile": {
+			"put": {
+				"operationId": "UpdateMyProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"properties": {
+												"verifyToken": {
+													"type": "string"
+												},
+												"emailVerified": {
+													"type": "boolean"
+												},
+												"role": {
+													"$ref": "#/components/schemas/_36_Enums.Role"
+												},
+												"password": {
+													"type": "string"
+												},
+												"email": {
+													"type": "string"
+												},
+												"prenom": {
+													"type": "string"
+												},
+												"nom": {
+													"type": "string"
+												},
+												"id": {
+													"type": "number",
+													"format": "double"
+												}
+											},
+											"required": [
+												"verifyToken",
+												"emailVerified",
+												"role",
+												"password",
+												"email",
+												"prenom",
+												"nom",
+												"id"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial__nom-string--prenom-string--password-string__"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/private": {
 			"get": {
 				"operationId": "GetPrivate",
@@ -88,6 +497,7 @@
 						}
 					}
 				},
+				"description": "Route privée accessible uniquement aux utilisateurs connectés\r\nGET /private\r\nRenvoie un message personnalisé \"Hello {prenom}\"",
 				"tags": [
 					"Private"
 				],
@@ -131,7 +541,7 @@
 				"operationId": "Register",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "un message demandant à vérifier l’adresse mail",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -149,17 +559,20 @@
 						}
 					}
 				},
+				"description": "Route d'inscription d'un nouvel utilisateur",
 				"tags": [
 					"Auth"
 				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
+					"description": ": données envoyées par le front (nom, prénom, email, mdp)",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/RegisterBody"
+								"$ref": "#/components/schemas/RegisterBody",
+								"description": ": données envoyées par le front (nom, prénom, email, mdp)"
 							}
 						}
 					}
@@ -171,7 +584,7 @@
 				"operationId": "VerifyEmail",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "un message si l’adresse est bien vérifiée",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -189,12 +602,14 @@
 						}
 					}
 				},
+				"description": "Vérifie un email grâce à un token transmis dans l'URL",
 				"tags": [
 					"Auth"
 				],
 				"security": [],
 				"parameters": [
 					{
+						"description": ": Token envoyé par email à l’utilisateur",
 						"in": "query",
 						"name": "token",
 						"required": true,
@@ -210,7 +625,7 @@
 				"operationId": "Login",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "un token JWT (à utiliser pour les routes sécurisées)",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -228,17 +643,20 @@
 						}
 					}
 				},
+				"description": "Connecte un utilisateur si email vérifié et mot de passe correct",
 				"tags": [
 					"Auth"
 				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
+					"description": ": email + mot de passe",
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/LoginBody"
+								"$ref": "#/components/schemas/LoginBody",
+								"description": ": email + mot de passe"
 							}
 						}
 					}
