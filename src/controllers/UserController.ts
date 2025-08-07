@@ -45,26 +45,7 @@ export class UserController extends Controller {
     })
   }
 
-  @Security('jwt')
-  @Get('{userId}')
-  public async getUser(
-    @Request() req: AuthRequest,
-    @Path() userId: number
-  ) {
-    const targetUser = await prisma.user.findUnique({ where: { id: userId } })
-
-    if (!targetUser) {
-      this.setStatus(404)
-      return { message: 'Utilisateur introuvable' }
-    }
-
-    if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
-      this.setStatus(403)
-      return { message: 'Accès interdit' }
-    }
-
-    return targetUser
-  }
+ 
 
   @Security('jwt')
   @Get('/profile')
@@ -94,6 +75,27 @@ export class UserController extends Controller {
     }
 
     return user
+  }
+
+ @Security('jwt')
+  @Get('{userId}')
+  public async getUser(
+    @Request() req: AuthRequest,
+    @Path() userId: number
+  ) {
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } })
+
+    if (!targetUser) {
+      this.setStatus(404)
+      return { message: 'Utilisateur introuvable' }
+    }
+
+    if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
+      this.setStatus(403)
+      return { message: 'Accès interdit' }
+    }
+
+    return targetUser
   }
 
   @Security('jwt')

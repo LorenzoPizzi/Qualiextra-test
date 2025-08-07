@@ -33,18 +33,6 @@ let UserController = class UserController extends tsoa_1.Controller {
             },
         });
     }
-    async getUser(req, userId) {
-        const targetUser = await prisma.user.findUnique({ where: { id: userId } });
-        if (!targetUser) {
-            this.setStatus(404);
-            return { message: 'Utilisateur introuvable' };
-        }
-        if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
-            this.setStatus(403);
-            return { message: 'Accès interdit' };
-        }
-        return targetUser;
-    }
     async getMyProfile(req) {
         const userId = req.user?.id;
         if (!userId) {
@@ -67,6 +55,18 @@ let UserController = class UserController extends tsoa_1.Controller {
             return { message: 'Utilisateur introuvable' };
         }
         return user;
+    }
+    async getUser(req, userId) {
+        const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+        if (!targetUser) {
+            this.setStatus(404);
+            return { message: 'Utilisateur introuvable' };
+        }
+        if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
+            this.setStatus(403);
+            return { message: 'Accès interdit' };
+        }
+        return targetUser;
     }
     async updateMyProfile(req, body) {
         const userId = req.user?.id;
@@ -129,6 +129,14 @@ __decorate([
 ], UserController.prototype, "getAllUsers", null);
 __decorate([
     (0, tsoa_1.Security)('jwt'),
+    (0, tsoa_1.Get)('/profile'),
+    __param(0, (0, tsoa_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getMyProfile", null);
+__decorate([
+    (0, tsoa_1.Security)('jwt'),
     (0, tsoa_1.Get)('{userId}'),
     __param(0, (0, tsoa_1.Request)()),
     __param(1, (0, tsoa_1.Path)()),
@@ -136,14 +144,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUser", null);
-__decorate([
-    (0, tsoa_1.Security)('jwt'),
-    (0, tsoa_1.Get)('/profile'),
-    __param(0, (0, tsoa_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "getMyProfile", null);
 __decorate([
     (0, tsoa_1.Security)('jwt'),
     (0, tsoa_1.Put)('/profile'),
