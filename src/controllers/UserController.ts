@@ -9,26 +9,24 @@ import {
   Put,
   Body,
   Delete,
-} from 'tsoa' // Importe les décorateurs et classes nécessaires pour définir les routes et sécuriser l'API
-import { PrismaClient } from '@prisma/client' // Importe Prisma pour interagir avec la base de données
-import { AuthenticatedRequest } from '../middlewares/authMiddleware' // Importe le type de requête authentifiée
+} from 'tsoa'
+import { PrismaClient } from '@prisma/client'
+import { AuthenticatedRequest } from '../middlewares/authMiddleware'
 
-const prisma = new PrismaClient() // Crée une instance de Prisma pour accéder à la base de données
+const prisma = new PrismaClient()
 
-@Route('users') // Toutes les routes de ce contrôleur commencent par /users
-@Tags('Users') // Groupe Swagger : "Users" (pour la documentation)
+@Route('users')
+@Tags('Users')
 export class UserController extends Controller {
-  // Récupère tous les utilisateurs (Admin uniquement)
-  @Security('jwt') // Cette route nécessite un token JWT
+  // ✅ Récupère tous les utilisateurs (Admin uniquement)
+  @Security('jwt')
   @Get('/')
   public async getAllUsers(@Request() req: AuthenticatedRequest) {
-    // Vérifie si l'utilisateur est admin
     if (req.user?.role !== 'ADMIN') {
-      this.setStatus(403) // Définit le code HTTP à 403 (Accès interdit)
+      this.setStatus(403)
       return { message: 'Accès interdit : admin uniquement.' }
     }
 
-    // Retourne la liste des utilisateurs avec certains champs
     return prisma.user.findMany({
       select: {
         id: true,
@@ -41,118 +39,39 @@ export class UserController extends Controller {
     })
   }
 
-  // Récupère un utilisateur spécifique (admin ou soi-même)
+  // ✅ Récupère un utilisateur spécifique (Admin ou soi-même)
   @Security('jwt')
   @Get('{userId}')
   public async getUser(
     @Request() req: AuthenticatedRequest,
     @Path() userId: number
   ) {
-    const targetUser = await prisma.user.findUnique({ where: { id: userId } }) // Cherche l'utilisateur par son id
+    const targetUser = await prisma.user.findUnique({ where: { id: userId } })
 
-    if (!targetUser) { // Si l'utilisateur n'existe pas
+    if (!targetUser) {
       this.setStatus(404)
       return { message: 'Utilisateur introuvable' }
     }
 
-    // Seul l'admin ou l'utilisateur lui-même peut accéder à ses infos
     if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
       this.setStatus(403)
       return { message: 'Accès interdit' }
     }
 
-    return targetUser // Retourne l'utilisateur trouvé
+    return targetUser
   }
 
-  // Met à jour un utilisateur (admin ou soi-même)
-  @Security('jwt')
-  @Put('{userId}')
-  public async updateUser(
-    @Request() req: AuthenticatedRequest,
-    @Path() userId: number,
-    @Body() body: Partial<{ nom: string; prenom: string; password: string }>
-  ) {
-    const existingUser = await prisma.user.findUnique({ where: { id: userId } }) // Cherche l'utilisateur à modifier
-
-    if (!existingUser) { // Si l'utilisateur n'existe pas
-      this.setStatus(404)
-      return { message: 'Utilisateur introuvable' }
-    }
-
-    // Seul l'admin ou l'utilisateur lui-même peut modifier ses infos
-    if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
-      this.setStatus(403)
-      return { message: 'Accès interdit' }
-    }
-
-    // Met à jour l'utilisateur avec les nouvelles données
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: body,
-    })
-
-    return updatedUser // Retourne l'utilisateur mis à jour
-  }
-
-  // Supprime un utilisateur (Admin uniquement)
-  @Security('jwt')
-  @Delete('{userId}')
-  public async deleteUser(
-    @Request() req: AuthenticatedRequest,
-    @Path() userId: number
-  ) {
-    // Seul l'admin peut supprimer un utilisateur
-    if (req.user?.role !== 'ADMIN') {
-      this.setStatus(403)
-      return { message: 'Accès interdit : admin uniquement.' }
-    }
-
-    await prisma.user.delete({ where: { id: userId } }) // Supprime l'utilisateur
-    return { message: 'Utilisateur supprimé' }
-  }
-
-  // Met à jour le profil de l’utilisateur connecté (sans passer d’id)
-  @Security('jwt')
-  @Put('profile')
-  public async updateMyProfile(
-    @Request() req: AuthenticatedRequest,
-    @Body() body: Partial<{ nom: string; prenom: string; password: string }>
-  ) {
-    const userId = req.user?.id // Récupère l'id de l'utilisateur connecté
-
-    if (!userId) { // Si l'utilisateur n'est pas authentifié
-      this.setStatus(401)
-      return { message: 'Utilisateur non authentifié' }
-    }
-
-    const existingUser = await prisma.user.findUnique({ where: { id: userId } }) // Cherche l'utilisateur
-
-    if (!existingUser) { // Si l'utilisateur n'existe pas
-      this.setStatus(404)
-      return { message: 'Utilisateur introuvable' }
-    }
-
-    // Met à jour le profil de l'utilisateur connecté
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: body,
-    })
-
-    return updatedUser // Retourne le profil mis à jour
-  }
-
-  // Récupère le profil de l’utilisateur connecté
+  // ✅ Récupère le profil de l’utilisateur connecté
   @Security('jwt')
   @Get('profile')
   public async getMyProfile(@Request() req: AuthenticatedRequest) {
-    const userId = req.user?.id // Récupère l'id de l'utilisateur connecté
+    const userId = req.user?.id
 
-    if (!userId) { // Si l'utilisateur n'est pas authentifié
+    if (!userId) {
       this.setStatus(401)
       return { message: 'Utilisateur non authentifié' }
     }
 
-    // Cherche l'utilisateur et sélectionne certains champs
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -165,11 +84,92 @@ export class UserController extends Controller {
       },
     })
 
-    if (!user) { // Si l'utilisateur n'existe pas
+    if (!user) {
       this.setStatus(404)
       return { message: 'Utilisateur introuvable' }
     }
 
-    return user // Retourne le profil de l'utilisateur connecté
+    return user
+  }
+
+  // ✅ Met à jour le profil de l’utilisateur connecté
+  @Security('jwt')
+  @Put('profile')
+  public async updateMyProfile(
+    @Request() req: AuthenticatedRequest,
+    @Body() body: Partial<{ nom: string; prenom: string; password: string }>
+  ) {
+    const userId = req.user?.id
+
+    if (!userId) {
+      this.setStatus(401)
+      return { message: 'Utilisateur non authentifié' }
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { id: userId } })
+
+    if (!existingUser) {
+      this.setStatus(404)
+      return { message: 'Utilisateur introuvable' }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: body,
+      select: {
+        id: true,
+        nom: true,
+        prenom: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+      },
+    })
+
+    return updatedUser
+  }
+
+  // ✅ Met à jour un utilisateur (Admin ou soi-même)
+  @Security('jwt')
+  @Put('{userId}')
+  public async updateUser(
+    @Request() req: AuthenticatedRequest,
+    @Path() userId: number,
+    @Body() body: Partial<{ nom: string; prenom: string; password: string }>
+  ) {
+    const existingUser = await prisma.user.findUnique({ where: { id: userId } })
+
+    if (!existingUser) {
+      this.setStatus(404)
+      return { message: 'Utilisateur introuvable' }
+    }
+
+    if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
+      this.setStatus(403)
+      return { message: 'Accès interdit' }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: body,
+    })
+
+    return updatedUser
+  }
+
+  // ✅ Supprime un utilisateur (Admin uniquement)
+  @Security('jwt')
+  @Delete('{userId}')
+  public async deleteUser(
+    @Request() req: AuthenticatedRequest,
+    @Path() userId: number
+  ) {
+    if (req.user?.role !== 'ADMIN') {
+      this.setStatus(403)
+      return { message: 'Accès interdit : admin uniquement.' }
+    }
+
+    await prisma.user.delete({ where: { id: userId } })
+    return { message: 'Utilisateur supprimé' }
   }
 }

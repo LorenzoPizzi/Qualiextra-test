@@ -13,18 +13,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
-const tsoa_1 = require("tsoa"); // Importe les décorateurs et classes nécessaires pour définir les routes et sécuriser l'API
-const client_1 = require("@prisma/client"); // Importe Prisma pour interagir avec la base de données
-const prisma = new client_1.PrismaClient(); // Crée une instance de Prisma pour accéder à la base de données
+const tsoa_1 = require("tsoa");
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 let UserController = class UserController extends tsoa_1.Controller {
-    // Récupère tous les utilisateurs (Admin uniquement)
+    // ✅ Récupère tous les utilisateurs (Admin uniquement)
     async getAllUsers(req) {
-        // Vérifie si l'utilisateur est admin
         if (req.user?.role !== 'ADMIN') {
-            this.setStatus(403); // Définit le code HTTP à 403 (Accès interdit)
+            this.setStatus(403);
             return { message: 'Accès interdit : admin uniquement.' };
         }
-        // Retourne la liste des utilisateurs avec certains champs
         return prisma.user.findMany({
             select: {
                 id: true,
@@ -36,76 +34,26 @@ let UserController = class UserController extends tsoa_1.Controller {
             },
         });
     }
-    // Récupère un utilisateur spécifique (admin ou soi-même)
+    // ✅ Récupère un utilisateur spécifique (Admin ou soi-même)
     async getUser(req, userId) {
-        const targetUser = await prisma.user.findUnique({ where: { id: userId } }); // Cherche l'utilisateur par son id
-        if (!targetUser) { // Si l'utilisateur n'existe pas
+        const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+        if (!targetUser) {
             this.setStatus(404);
             return { message: 'Utilisateur introuvable' };
         }
-        // Seul l'admin ou l'utilisateur lui-même peut accéder à ses infos
         if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
             this.setStatus(403);
             return { message: 'Accès interdit' };
         }
-        return targetUser; // Retourne l'utilisateur trouvé
+        return targetUser;
     }
-    // Met à jour un utilisateur (admin ou soi-même)
-    async updateUser(req, userId, body) {
-        const existingUser = await prisma.user.findUnique({ where: { id: userId } }); // Cherche l'utilisateur à modifier
-        if (!existingUser) { // Si l'utilisateur n'existe pas
-            this.setStatus(404);
-            return { message: 'Utilisateur introuvable' };
-        }
-        // Seul l'admin ou l'utilisateur lui-même peut modifier ses infos
-        if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
-            this.setStatus(403);
-            return { message: 'Accès interdit' };
-        }
-        // Met à jour l'utilisateur avec les nouvelles données
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: body,
-        });
-        return updatedUser; // Retourne l'utilisateur mis à jour
-    }
-    // Supprime un utilisateur (Admin uniquement)
-    async deleteUser(req, userId) {
-        // Seul l'admin peut supprimer un utilisateur
-        if (req.user?.role !== 'ADMIN') {
-            this.setStatus(403);
-            return { message: 'Accès interdit : admin uniquement.' };
-        }
-        await prisma.user.delete({ where: { id: userId } }); // Supprime l'utilisateur
-        return { message: 'Utilisateur supprimé' };
-    }
-    // Met à jour le profil de l’utilisateur connecté (sans passer d’id)
-    async updateMyProfile(req, body) {
-        const userId = req.user?.id; // Récupère l'id de l'utilisateur connecté
-        if (!userId) { // Si l'utilisateur n'est pas authentifié
-            this.setStatus(401);
-            return { message: 'Utilisateur non authentifié' };
-        }
-        const existingUser = await prisma.user.findUnique({ where: { id: userId } }); // Cherche l'utilisateur
-        if (!existingUser) { // Si l'utilisateur n'existe pas
-            this.setStatus(404);
-            return { message: 'Utilisateur introuvable' };
-        }
-        // Met à jour le profil de l'utilisateur connecté
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: body,
-        });
-        return updatedUser; // Retourne le profil mis à jour
-    }
-    // Récupère le profil de l’utilisateur connecté
+    // ✅ Récupère le profil de l’utilisateur connecté
     async getMyProfile(req) {
-        const userId = req.user?.id; // Récupère l'id de l'utilisateur connecté
-        if (!userId) { // Si l'utilisateur n'est pas authentifié
+        const userId = req.user?.id;
+        if (!userId) {
             this.setStatus(401);
             return { message: 'Utilisateur non authentifié' };
         }
-        // Cherche l'utilisateur et sélectionne certains champs
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -117,17 +65,68 @@ let UserController = class UserController extends tsoa_1.Controller {
                 emailVerified: true,
             },
         });
-        if (!user) { // Si l'utilisateur n'existe pas
+        if (!user) {
             this.setStatus(404);
             return { message: 'Utilisateur introuvable' };
         }
-        return user; // Retourne le profil de l'utilisateur connecté
+        return user;
+    }
+    // ✅ Met à jour le profil de l’utilisateur connecté
+    async updateMyProfile(req, body) {
+        const userId = req.user?.id;
+        if (!userId) {
+            this.setStatus(401);
+            return { message: 'Utilisateur non authentifié' };
+        }
+        const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+        if (!existingUser) {
+            this.setStatus(404);
+            return { message: 'Utilisateur introuvable' };
+        }
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: body,
+            select: {
+                id: true,
+                nom: true,
+                prenom: true,
+                email: true,
+                role: true,
+                emailVerified: true,
+            },
+        });
+        return updatedUser;
+    }
+    // ✅ Met à jour un utilisateur (Admin ou soi-même)
+    async updateUser(req, userId, body) {
+        const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+        if (!existingUser) {
+            this.setStatus(404);
+            return { message: 'Utilisateur introuvable' };
+        }
+        if (req.user?.role !== 'ADMIN' && req.user?.id !== userId) {
+            this.setStatus(403);
+            return { message: 'Accès interdit' };
+        }
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: body,
+        });
+        return updatedUser;
+    }
+    // ✅ Supprime un utilisateur (Admin uniquement)
+    async deleteUser(req, userId) {
+        if (req.user?.role !== 'ADMIN') {
+            this.setStatus(403);
+            return { message: 'Accès interdit : admin uniquement.' };
+        }
+        await prisma.user.delete({ where: { id: userId } });
+        return { message: 'Utilisateur supprimé' };
     }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, tsoa_1.Security)('jwt') // Cette route nécessite un token JWT
-    ,
+    (0, tsoa_1.Security)('jwt'),
     (0, tsoa_1.Get)('/'),
     __param(0, (0, tsoa_1.Request)()),
     __metadata("design:type", Function),
@@ -143,6 +142,23 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUser", null);
+__decorate([
+    (0, tsoa_1.Security)('jwt'),
+    (0, tsoa_1.Get)('profile'),
+    __param(0, (0, tsoa_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getMyProfile", null);
+__decorate([
+    (0, tsoa_1.Security)('jwt'),
+    (0, tsoa_1.Put)('profile'),
+    __param(0, (0, tsoa_1.Request)()),
+    __param(1, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateMyProfile", null);
 __decorate([
     (0, tsoa_1.Security)('jwt'),
     (0, tsoa_1.Put)('{userId}'),
@@ -162,25 +178,7 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "deleteUser", null);
-__decorate([
-    (0, tsoa_1.Security)('jwt'),
-    (0, tsoa_1.Put)('profile'),
-    __param(0, (0, tsoa_1.Request)()),
-    __param(1, (0, tsoa_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "updateMyProfile", null);
-__decorate([
-    (0, tsoa_1.Security)('jwt'),
-    (0, tsoa_1.Get)('profile'),
-    __param(0, (0, tsoa_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "getMyProfile", null);
 exports.UserController = UserController = __decorate([
-    (0, tsoa_1.Route)('users') // Toutes les routes de ce contrôleur commencent par /users
-    ,
-    (0, tsoa_1.Tags)('Users') // Groupe Swagger : "Users" (pour la documentation)
+    (0, tsoa_1.Route)('users'),
+    (0, tsoa_1.Tags)('Users')
 ], UserController);

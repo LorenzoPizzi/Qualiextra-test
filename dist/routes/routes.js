@@ -99,6 +99,53 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsUserController_getMyProfile = {
+        req: { "in": "request", "name": "req", "required": true, "dataType": "object" },
+    };
+    app.get('/users/profile', authenticateMiddleware([{ "jwt": [] }]), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController)), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController.prototype.getMyProfile)), async function UserController_getMyProfile(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getMyProfile, request, response });
+            const controller = new UserController_1.UserController();
+            await templateService.apiHandler({
+                methodName: 'getMyProfile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    const argsUserController_updateMyProfile = {
+        req: { "in": "request", "name": "req", "required": true, "dataType": "object" },
+        body: { "in": "body", "name": "body", "required": true, "ref": "Partial__nom-string--prenom-string--password-string__" },
+    };
+    app.put('/users/profile', authenticateMiddleware([{ "jwt": [] }]), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController)), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController.prototype.updateMyProfile)), async function UserController_updateMyProfile(request, response, next) {
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = templateService.getValidatedArgs({ args: argsUserController_updateMyProfile, request, response });
+            const controller = new UserController_1.UserController();
+            await templateService.apiHandler({
+                methodName: 'updateMyProfile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+            });
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     const argsUserController_updateUser = {
         req: { "in": "request", "name": "req", "required": true, "dataType": "object" },
         userId: { "in": "path", "name": "userId", "required": true, "dataType": "double" },
@@ -136,53 +183,6 @@ function RegisterRoutes(app) {
             const controller = new UserController_1.UserController();
             await templateService.apiHandler({
                 methodName: 'deleteUser',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-            });
-        }
-        catch (err) {
-            return next(err);
-        }
-    });
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    const argsUserController_updateMyProfile = {
-        req: { "in": "request", "name": "req", "required": true, "dataType": "object" },
-        body: { "in": "body", "name": "body", "required": true, "ref": "Partial__nom-string--prenom-string--password-string__" },
-    };
-    app.put('/users/profile', authenticateMiddleware([{ "jwt": [] }]), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController)), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController.prototype.updateMyProfile)), async function UserController_updateMyProfile(request, response, next) {
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        let validatedArgs = [];
-        try {
-            validatedArgs = templateService.getValidatedArgs({ args: argsUserController_updateMyProfile, request, response });
-            const controller = new UserController_1.UserController();
-            await templateService.apiHandler({
-                methodName: 'updateMyProfile',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-            });
-        }
-        catch (err) {
-            return next(err);
-        }
-    });
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    const argsUserController_getMyProfile = {
-        req: { "in": "request", "name": "req", "required": true, "dataType": "object" },
-    };
-    app.get('/users/profile', authenticateMiddleware([{ "jwt": [] }]), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController)), ...((0, runtime_1.fetchMiddlewares)(UserController_1.UserController.prototype.getMyProfile)), async function UserController_getMyProfile(request, response, next) {
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        let validatedArgs = [];
-        try {
-            validatedArgs = templateService.getValidatedArgs({ args: argsUserController_getMyProfile, request, response });
-            const controller = new UserController_1.UserController();
-            await templateService.apiHandler({
-                methodName: 'getMyProfile',
                 controller,
                 response,
                 next,
