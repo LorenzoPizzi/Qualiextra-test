@@ -11,18 +11,23 @@ import {
   Delete,
 } from 'tsoa'
 import { PrismaClient } from '@prisma/client'
-import { AuthenticatedRequest } from '../middlewares/authMiddleware'
 import express from 'express'
 
 const prisma = new PrismaClient()
 
+type AuthRequest = express.Request & {
+  user?: {
+    id: number
+    role: string
+  }
+}
+
 @Route('users')
 @Tags('Users')
 export class UserController extends Controller {
-  // ✅ Récupère tous les utilisateurs (Admin uniquement)
   @Security('jwt')
   @Get('/')
-  public async getAllUsers(@Request() req: AuthenticatedRequest) {
+  public async getAllUsers(@Request() req: AuthRequest) {
     if (req.user?.role !== 'ADMIN') {
       this.setStatus(403)
       return { message: 'Accès interdit : admin uniquement.' }
@@ -40,11 +45,10 @@ export class UserController extends Controller {
     })
   }
 
-  // ✅ Récupère un utilisateur spécifique (Admin ou soi-même)
   @Security('jwt')
   @Get('{userId}')
   public async getUser(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthRequest,
     @Path() userId: number
   ) {
     const targetUser = await prisma.user.findUnique({ where: { id: userId } })
@@ -62,10 +66,9 @@ export class UserController extends Controller {
     return targetUser
   }
 
-  // ✅ Récupère le profil de l’utilisateur connecté
   @Security('jwt')
   @Get('profile')
-  public async getMyProfile(@Request() req: express.Request & { user?: { id: number; role: string } }) {
+  public async getMyProfile(@Request() req: AuthRequest) {
     const userId = req.user?.id
 
     if (!userId) {
@@ -93,11 +96,10 @@ export class UserController extends Controller {
     return user
   }
 
-  // ✅ Met à jour le profil de l’utilisateur connecté
   @Security('jwt')
   @Put('profile')
   public async updateMyProfile(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthRequest,
     @Body() body: Partial<{ nom: string; prenom: string; password: string }>
   ) {
     const userId = req.user?.id
@@ -130,11 +132,10 @@ export class UserController extends Controller {
     return updatedUser
   }
 
-  // ✅ Met à jour un utilisateur (Admin ou soi-même)
   @Security('jwt')
   @Put('{userId}')
   public async updateUser(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthRequest,
     @Path() userId: number,
     @Body() body: Partial<{ nom: string; prenom: string; password: string }>
   ) {
@@ -158,11 +159,10 @@ export class UserController extends Controller {
     return updatedUser
   }
 
-  // ✅ Supprime un utilisateur (Admin uniquement)
   @Security('jwt')
   @Delete('{userId}')
   public async deleteUser(
-    @Request() req: AuthenticatedRequest,
+    @Request() req: AuthRequest,
     @Path() userId: number
   ) {
     if (req.user?.role !== 'ADMIN') {

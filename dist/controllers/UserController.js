@@ -17,7 +17,6 @@ const tsoa_1 = require("tsoa");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 let UserController = class UserController extends tsoa_1.Controller {
-    // ✅ Récupère tous les utilisateurs (Admin uniquement)
     async getAllUsers(req) {
         if (req.user?.role !== 'ADMIN') {
             this.setStatus(403);
@@ -34,7 +33,6 @@ let UserController = class UserController extends tsoa_1.Controller {
             },
         });
     }
-    // ✅ Récupère un utilisateur spécifique (Admin ou soi-même)
     async getUser(req, userId) {
         const targetUser = await prisma.user.findUnique({ where: { id: userId } });
         if (!targetUser) {
@@ -47,7 +45,6 @@ let UserController = class UserController extends tsoa_1.Controller {
         }
         return targetUser;
     }
-    // ✅ Récupère le profil de l’utilisateur connecté
     async getMyProfile(req) {
         const userId = req.user?.id;
         if (!userId) {
@@ -71,7 +68,6 @@ let UserController = class UserController extends tsoa_1.Controller {
         }
         return user;
     }
-    // ✅ Met à jour le profil de l’utilisateur connecté
     async updateMyProfile(req, body) {
         const userId = req.user?.id;
         if (!userId) {
@@ -97,7 +93,6 @@ let UserController = class UserController extends tsoa_1.Controller {
         });
         return updatedUser;
     }
-    // ✅ Met à jour un utilisateur (Admin ou soi-même)
     async updateUser(req, userId, body) {
         const existingUser = await prisma.user.findUnique({ where: { id: userId } });
         if (!existingUser) {
@@ -114,7 +109,6 @@ let UserController = class UserController extends tsoa_1.Controller {
         });
         return updatedUser;
     }
-    // ✅ Supprime un utilisateur (Admin uniquement)
     async deleteUser(req, userId) {
         if (req.user?.role !== 'ADMIN') {
             this.setStatus(403);
