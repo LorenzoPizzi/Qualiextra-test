@@ -138,7 +138,7 @@ __decorate([
 ], UserController.prototype, "getUser", null);
 __decorate([
     (0, tsoa_1.Security)('jwt'),
-    (0, tsoa_1.Get)('profile'),
+    (0, tsoa_1.Get)('/profile'),
     __param(0, (0, tsoa_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -146,7 +146,7 @@ __decorate([
 ], UserController.prototype, "getMyProfile", null);
 __decorate([
     (0, tsoa_1.Security)('jwt'),
-    (0, tsoa_1.Put)('profile'),
+    (0, tsoa_1.Put)('/profile'),
     __param(0, (0, tsoa_1.Request)()),
     __param(1, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),

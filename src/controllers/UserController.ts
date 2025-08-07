@@ -67,7 +67,7 @@ export class UserController extends Controller {
   }
 
   @Security('jwt')
-  @Get('profile')
+  @Get('/profile')
   public async getMyProfile(@Request() req: AuthRequest) {
     const userId = req.user?.id
 
@@ -97,7 +97,7 @@ export class UserController extends Controller {
   }
 
   @Security('jwt')
-  @Put('profile')
+  @Put('/profile')
   public async updateMyProfile(
     @Request() req: AuthRequest,
     @Body() body: Partial<{ nom: string; prenom: string; password: string }>
