@@ -12,6 +12,7 @@ import {
 } from 'tsoa'
 import { PrismaClient } from '@prisma/client'
 import { AuthenticatedRequest } from '../middlewares/authMiddleware'
+import express from 'express'
 
 const prisma = new PrismaClient()
 
@@ -64,7 +65,7 @@ export class UserController extends Controller {
   // ✅ Récupère le profil de l’utilisateur connecté
   @Security('jwt')
   @Get('profile')
-  public async getMyProfile(@Request() req: AuthenticatedRequest) {
+  public async getMyProfile(@Request() req: express.Request & { user?: { id: number; role: string } }) {
     const userId = req.user?.id
 
     if (!userId) {
